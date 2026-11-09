@@ -108,9 +108,9 @@ public class TicTacToe extends Canvas implements Runnable {
                 shouldRender = true;
             }
 
-            //try {
-            //Thread.sleep(1);
-            //} catch (InterruptedException ignored) {}
+            try {
+                Thread.sleep(2);
+            } catch (InterruptedException ignored) {}
 
             if (shouldRender) {
                 frames++;
