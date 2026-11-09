@@ -36,8 +36,8 @@ public class TicTacToe extends Canvas implements Runnable {
                 if (BOARD[col][row] != 0) return;
                 BOARD[col][row] = (byte) (turn ? 2 : 1);
                 turn = !turn;
-                if (isDraw()) win = 3;
-                else win = check();
+                win = check();
+                if (win == 0 && isDraw()) win = 3;
             }
         });
 
