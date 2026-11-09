@@ -18,7 +18,7 @@ public class TicTacToe extends Canvas implements Runnable {
     public static final int WH = CELL_SIZE * CELLS;
 
     private Thread thread;
-    public boolean running = false;
+    public volatile boolean running = false;
 
     public byte[][] BOARD = new byte[CELLS][CELLS];
     public boolean turn = ThreadLocalRandom.current().nextBoolean();
@@ -36,7 +36,8 @@ public class TicTacToe extends Canvas implements Runnable {
                 if (BOARD[col][row] != 0) return;
                 BOARD[col][row] = (byte) (turn ? 2 : 1);
                 turn = !turn;
-                win = check();
+                if (isDraw()) win = 3;
+                else win = check();
             }
         });
 
@@ -62,15 +63,17 @@ public class TicTacToe extends Canvas implements Runnable {
         frame.pack();
         frame.setLocationRelativeTo(null);
         this.start();
+        setFocusable(true);
         frame.setVisible(true);
+        requestFocusInWindow();
     }
 
     public synchronized void start() {
         if (running) return;
 
+        running = true;
         this.thread = new Thread(this);
         thread.start();
-        running = true;
     }
 
     public synchronized void stop() {
@@ -171,7 +174,10 @@ public class TicTacToe extends Canvas implements Runnable {
 
         g.setFont(FONT);
         String text = (turn ? "BLUE" : "RED") + "'S TURN";
-        if (win != 0) text = (win == 2 ? "BLUE" : "RED") + " WINS";
+        if (win != 0) {
+            if (win == 3) text = "DRAW";
+            else text = (win == 2 ? "BLUE" : "RED") + " WINS";
+        }
 
         FontMetrics fm = g.getFontMetrics();
         int x = (getWidth() - fm.stringWidth(text)) / 2;
@@ -233,5 +239,15 @@ public class TicTacToe extends Canvas implements Runnable {
         }
 
         return 0;
+    }
+
+    private boolean isDraw() {
+        for (int x = 0; x < CELLS; x++) {
+            for (int y = 0; y < CELLS; y++) {
+                if (BOARD[x][y] == 0) return false;
+            }
+        }
+
+        return true;
     }
 }
